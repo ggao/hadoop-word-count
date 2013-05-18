@@ -60,16 +60,13 @@ object Dependencies {
   //  val excludeNetty = ExclusionRule(organization = "org.jboss.netty")
 
   lazy val sharedLibraryDependencies = Seq(
-    "log4j" % "log4j" % "1.2.17"
+    "log4j" % "log4j" % "1.2.17",
+    "org.mockito" % "mockito-all" % "1.9.5" % "test"
   )
 
   lazy val hadoopDependencies = Seq(
     "org.apache.hadoop" % "hadoop-core" % HADOOP_VERSION,
     "org.apache.hadoop" % "hadoop-client" % HADOOP_VERSION
-  )
-
-  lazy val hadoopTestDependencies = hadoopDependencies ++ Seq(
-    "org.apache.hadoop" % "hadoop-core" % HADOOP_VERSION,
-    "org.apache.hadoop" % "hadoop-client" % HADOOP_VERSION
+    //"org.apache.mrunit" % "mrunit" % "0.9.0-incubating" % "test"
   )
 }

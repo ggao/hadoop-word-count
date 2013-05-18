@@ -2,6 +2,10 @@ package com.dbtsai.hadoop.util;
 
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
+
+import  org.mockito.Mockito.mock;
+import  org.mockito.Mockito.verify;
+
 import org.junit.Test;
 
 public class InMapperCombinerTest {
