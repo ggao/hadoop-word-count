@@ -40,7 +40,8 @@ object HadoopWordCountBuild extends Build {
     id = "mapreduce",
     base = file("mapreduce"),
     settings = sharedSettings ++ Seq(
-      name := "mapreduce"
+      name := "mapreduce",
+      libraryDependencies ++= hadoopDependencies
     )
   ) dependsOn (utility)
 
@@ -56,7 +57,7 @@ object HadoopWordCountBuild extends Build {
 }
 
 object Dependencies {
-  val HADOOP_VERSION = "2.0.0-mr1-cdh4.1.1"
+  val HADOOP_VERSION = "2.0.0-mr1-cdh4.2.0"
 
   //  val excludeJackson = ExclusionRule(organization = "org.codehaus.jackson")
   //  val excludeNetty = ExclusionRule(organization = "org.jboss.netty")
@@ -68,7 +69,7 @@ object Dependencies {
 
   lazy val hadoopDependencies = Seq(
     "org.apache.hadoop" % "hadoop-core" % HADOOP_VERSION,
-    "org.apache.hadoop" % "hadoop-client" % HADOOP_VERSION
-    //"org.apache.mrunit" % "mrunit" % "0.9.0-incubating" % "test"
+    "org.apache.hadoop" % "hadoop-client" % HADOOP_VERSION,
+    "org.apache.mrunit" % "mrunit" % "0.9.0-incubating" % "test" classifier "hadoop2" //"hadoop1"
   )
 }
