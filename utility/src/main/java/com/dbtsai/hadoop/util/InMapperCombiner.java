@@ -11,7 +11,7 @@ public class InMapperCombiner<KEY, VALUE> {
     private static final int DEFAULT_INITIAL_CAPACITY = 512;
     private static final float DEFAULT_LOAD_FACTOR = .75F;
 
-    private int maxCacheCapacity;
+    private final int maxCacheCapacity;
     private final Map<KEY, VALUE> lruCache;
     private CombiningFunction<VALUE> combiningFunction;
     private Mapper.Context context;

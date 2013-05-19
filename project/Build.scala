@@ -18,6 +18,7 @@ object BuildSettings {
     resolvers ++= Seq(
       "Cloudera Repository" at "https://repository.cloudera.com/artifactory/cloudera-repos/"
     ),
+    testOptions += Tests.Argument(TestFrameworks.JUnit, "+q", "-v"),
     libraryDependencies ++= sharedLibraryDependencies
   )
 }
@@ -48,6 +49,7 @@ object HadoopWordCountBuild extends Build {
     base = file("utility"),
     settings = sharedSettings ++ Seq(
       name := "utility",
+      javaSource in Test <<= baseDirectory(_ / "src/test/java"),
       libraryDependencies ++= hadoopDependencies
     )
   )
