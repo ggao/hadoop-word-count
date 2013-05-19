@@ -3,6 +3,7 @@ package com.dbtsai.hadoop.mapreduce;
 /**
  * See Hadoop, The Definitive Guide, page 154
  * and https://cwiki.apache.org/MRUNIT/mrunit-tutorial.html
+ * to know more about MRUnit
  */
 
 //import org.apache.hadoop.io.LongWritable;
