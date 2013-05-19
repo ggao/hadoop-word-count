@@ -29,8 +29,8 @@ public class WordCountMR {
     }
 
     public static class WordCountMapperWithInMapperCombiner extends Mapper<LongWritable, Text, Text, LongWritable> {
-        //   private final static LongWritable one = new LongWritable(1);
-        //   private Text word = new Text();
+        private final static LongWritable one = new LongWritable(1);
+        private Text word = new Text();
         private InMapperCombiner combiner = new InMapperCombiner<Text, LongWritable>(
                 new CombiningFunction<LongWritable>() {
                     @Override
@@ -46,8 +46,6 @@ public class WordCountMR {
             String line = value.toString();
             StringTokenizer tokenizer = new StringTokenizer(line);
             while (tokenizer.hasMoreTokens()) {
-                Text word = new Text();
-                LongWritable one = new LongWritable(1);
                 word.set(tokenizer.nextToken());
                 combiner.write(word, one, context);
             }
@@ -57,7 +55,6 @@ public class WordCountMR {
         protected void cleanup(Mapper.Context context) throws IOException, InterruptedException {
             combiner.flush(context);
         }
-
     }
 
     public static class WordCountReducer extends Reducer<Text, LongWritable, Text, LongWritable> {

@@ -1,12 +1,15 @@
 package com.dbtsai.hadoop.util;
 
+import org.apache.hadoop.io.AbstractMapWritable;
+import org.apache.hadoop.io.Writable;
+import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-public class InMapperCombiner<KEY, VALUE> {
+public class InMapperCombiner<KEY extends WritableComparable, VALUE extends Writable> {
     private static final int DEFAULT_CAPACITY = 65536;
     private static final int DEFAULT_INITIAL_CAPACITY = 512;
     private static final float DEFAULT_LOAD_FACTOR = .75F;
@@ -61,6 +64,8 @@ public class InMapperCombiner<KEY, VALUE> {
 
     @SuppressWarnings("unchecked")
     public void write(KEY key, VALUE value, Mapper.Context context) throws InterruptedException, IOException {
+        KEY cleanKey ;
+        VALUE cleanValue ;//=  AbstractMapWritable.copy(value);
         this.context = context;
         if (combiningFunction != null) {
             try {
