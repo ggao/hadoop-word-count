@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.util.StringTokenizer;
 
 
-public class WordCountMapper {
+public class WordCountMR {
 
     public static class WordCountMapperWithoutInMapperCombiner extends Mapper<LongWritable, Text, Text, LongWritable> {
         private final static LongWritable one = new LongWritable(1);
