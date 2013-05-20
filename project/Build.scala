@@ -8,12 +8,12 @@ object BuildSettings {
 
   import Dependencies._
 
-  val crossHadoopVersions = SettingKey[scala.Seq[scala.Predef.String]](
+  val crossHadoopVersions = SettingKey[Seq[String]](
     "cross-hadoop-versions",
     "The versions of Hadoop used for cross building."
   )
 
-  val hadoopVersion = SettingKey[scala.Predef.String](
+  val hadoopVersion = SettingKey[String](
     "hadoop-version",
     "The version of Hadoop used for building."
   )
@@ -52,7 +52,6 @@ object HadoopWordCountBuild extends Build {
     base = file("mapreduce"),
     settings = sharedSettings ++ Seq(
       name := "mapreduce",
-      javaSource in Test <<= baseDirectory(_ / "src/test/java"),
       libraryDependencies ++= hadoopDependencies
     )
   ) dependsOn (utility)
@@ -63,7 +62,6 @@ object HadoopWordCountBuild extends Build {
     base = file("utility"),
     settings = sharedSettings ++ Seq(
       name := "utility",
-      javaSource in Test <<= baseDirectory(_ / "src/test/java"),
       libraryDependencies ++= hadoopDependencies
     )
   )
@@ -73,17 +71,23 @@ object Dependencies {
   val HADOOP_VERSION = "2.0.0-mr1-cdh4.2.0"
 
   lazy val sharedLibraryDependencies = Seq(
-    "log4j" % "log4j" % "1.2.17",
-    "org.mockito" % "mockito-all" % "1.9.5" % "test"
-  )
-
-  lazy val hadoopDependencies = Seq(
     "com.novocode" % "junit-interface" % "0.10-M4" % "test",
     "eu.henkelmann" % "junit_xml_listener" % "0.2" % "test",
-    "org.apache.hadoop" % "hadoop-core" % HADOOP_VERSION,
-    "org.apache.hadoop" % "hadoop-client" % HADOOP_VERSION,
-    // "org.apache.hadoop" % "hadoop-hdfs" % HADOOP_VERSION,
-    // "org.apache.hadoop" % "hadoop-minicluster" % HADOOP_VERSION % "test",
-    "org.apache.mrunit" % "mrunit" % "0.9.0-incubating" % "test" classifier "hadoop2" //"hadoop1"
+    "org.mockito" % "mockito-all" % "1.9.5" % "test",
+    "log4j" % "log4j" % "1.2.17"
   )
+
+  def matchHadoopDependencies(x: String): Seq[ModuleID] = x match {
+    case "2.0.0-mr1-cdh4.2.0" =>
+      Seq(
+        "org.apache.hadoop" % "hadoop-core" % "2.0.0-mr1-cdh4.2.0",
+        "org.apache.hadoop" % "hadoop-client" % "2.0.0-mr1-cdh4.2.0",
+        // "org.apache.hadoop" % "hadoop-hdfs" % "2.0.0-mr1-cdh4.2.0",
+        // "org.apache.hadoop" % "hadoop-minicluster" % "2.0.0-mr1-cdh4.2.0" % "test",
+        "org.apache.mrunit" % "mrunit" % "0.9.0-incubating" % "test" classifier "hadoop2"
+      )
+    case x => sys.error("Unsupported Hadoop version " + x)
+  }
+
+  lazy val hadoopDependencies = matchHadoopDependencies(HADOOP_VERSION)
 }
