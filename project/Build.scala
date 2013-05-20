@@ -16,9 +16,11 @@ object BuildSettings {
     crossPaths := false,
     javacOptions ++= Seq("-source", "1.6", "-target", "1.6"),
     resolvers ++= Seq(
-      "Cloudera Repository" at "https://repository.cloudera.com/artifactory/cloudera-repos/"
+      "Cloudera Repository" at "https://repository.cloudera.com/artifactory/cloudera-repos/",
+      "Christoph's Maven Repo" at "http://maven.henkelmann.eu/"
     ),
     testOptions += Tests.Argument(TestFrameworks.JUnit, "-q", "-v"),
+    testListeners <<= target.map(t => Seq(new eu.henkelmann.sbt.JUnitXmlTestsListener(t.getAbsolutePath))),
     libraryDependencies ++= sharedLibraryDependencies
   )
 }
@@ -46,6 +48,7 @@ object HadoopWordCountBuild extends Build {
     )
   ) dependsOn (utility)
 
+
   lazy val utility = Project(
     id = "utility",
     base = file("utility"),
@@ -66,9 +69,10 @@ object Dependencies {
   )
 
   lazy val hadoopDependencies = Seq(
+    "com.novocode" % "junit-interface" % "0.10-M4" % "test",
+    "eu.henkelmann" % "junit_xml_listener" % "0.2" % "test",
     "org.apache.hadoop" % "hadoop-core" % HADOOP_VERSION,
     "org.apache.hadoop" % "hadoop-client" % HADOOP_VERSION,
-    "com.novocode" % "junit-interface" % "0.10-M4" % "test",
     // "org.apache.hadoop" % "hadoop-hdfs" % HADOOP_VERSION,
     // "org.apache.hadoop" % "hadoop-minicluster" % HADOOP_VERSION % "test",
     "org.apache.mrunit" % "mrunit" % "0.9.0-incubating" % "test" classifier "hadoop2" //"hadoop1"
