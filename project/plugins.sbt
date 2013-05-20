@@ -14,8 +14,6 @@ case x if (x.startsWith("0.12")) => "com.github.siasia" %% "xsbt-web-plugin" % "
 
 resolvers += "Scala Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
 
-resolvers += "Cloudera Repository" at "https://repository.cloudera.com/artifactory/cloudera-repos/"
-
 addSbtPlugin("eu.henkelmann" % "junit_xml_listener" % "0.4-SNAPSHOT")
 
 addSbtPlugin("com.github.retronym" % "sbt-onejar" % "0.8")

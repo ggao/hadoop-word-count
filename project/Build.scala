@@ -28,6 +28,7 @@ object BuildSettings {
     javacOptions ++= Seq("-source", "1.6", "-target", "1.6"),
     testOptions += Tests.Argument(TestFrameworks.JUnit, "-q", "-v"),
     testListeners <<= (target, streams).map((t, s) => Seq(new eu.henkelmann.sbt.JUnitXmlTestsListener(t.getAbsolutePath))),
+    resolvers += "Cloudera Repository" at "https://repository.cloudera.com/artifactory/cloudera-repos/",
     hadoopVersion := "2.0.0-mr1-cdh4.2.0",
     crossHadoopVersions := Seq("2.0.0-mr1-cdh4.2.0"),
     libraryDependencies ++= sharedLibraryDependencies
