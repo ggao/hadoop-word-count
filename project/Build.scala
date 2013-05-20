@@ -27,7 +27,7 @@ object BuildSettings {
     crossPaths := false,
     javacOptions ++= Seq("-source", "1.6", "-target", "1.6"),
     testOptions += Tests.Argument(TestFrameworks.JUnit, "-q", "-v"),
-    testListeners <<= target.map(t => Seq(new eu.henkelmann.sbt.JUnitXmlTestsListener(t.getAbsolutePath))),
+    testListeners <<= (target, streams).map((t, s) => Seq(new eu.henkelmann.sbt.JUnitXmlTestsListener(t.getAbsolutePath))),
     hadoopVersion := "2.0.0-mr1-cdh4.2.0",
     crossHadoopVersions := Seq("2.0.0-mr1-cdh4.2.0"),
     libraryDependencies ++= sharedLibraryDependencies
