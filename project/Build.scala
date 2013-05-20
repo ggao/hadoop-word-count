@@ -18,7 +18,7 @@ object BuildSettings {
     resolvers ++= Seq(
       "Cloudera Repository" at "https://repository.cloudera.com/artifactory/cloudera-repos/"
     ),
-    testOptions += Tests.Argument(TestFrameworks.JUnit, "+q", "-v"),
+    testOptions += Tests.Argument(TestFrameworks.JUnit, "-q", "-v"),
     libraryDependencies ++= sharedLibraryDependencies
   )
 }
@@ -41,6 +41,7 @@ object HadoopWordCountBuild extends Build {
     base = file("mapreduce"),
     settings = sharedSettings ++ Seq(
       name := "mapreduce",
+      javaSource in Test <<= baseDirectory(_ / "src/test/java"),
       libraryDependencies ++= hadoopDependencies
     )
   ) dependsOn (utility)
@@ -59,9 +60,6 @@ object HadoopWordCountBuild extends Build {
 object Dependencies {
   val HADOOP_VERSION = "2.0.0-mr1-cdh4.2.0"
 
-  //  val excludeJackson = ExclusionRule(organization = "org.codehaus.jackson")
-  //  val excludeNetty = ExclusionRule(organization = "org.jboss.netty")
-
   lazy val sharedLibraryDependencies = Seq(
     "log4j" % "log4j" % "1.2.17",
     "org.mockito" % "mockito-all" % "1.9.5" % "test"
@@ -70,8 +68,9 @@ object Dependencies {
   lazy val hadoopDependencies = Seq(
     "org.apache.hadoop" % "hadoop-core" % HADOOP_VERSION,
     "org.apache.hadoop" % "hadoop-client" % HADOOP_VERSION,
-   // "org.apache.hadoop" % "hadoop-hdfs" % HADOOP_VERSION,
-    "org.apache.hadoop" % "hadoop-minicluster" % HADOOP_VERSION % "test",
+    "com.novocode" % "junit-interface" % "0.10-M4" % "test",
+    // "org.apache.hadoop" % "hadoop-hdfs" % HADOOP_VERSION,
+    // "org.apache.hadoop" % "hadoop-minicluster" % HADOOP_VERSION % "test",
     "org.apache.mrunit" % "mrunit" % "0.9.0-incubating" % "test" classifier "hadoop2" //"hadoop1"
   )
 }

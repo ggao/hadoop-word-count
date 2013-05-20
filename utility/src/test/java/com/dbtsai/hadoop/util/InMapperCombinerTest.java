@@ -20,8 +20,8 @@ import static org.mockito.Mockito.*;
 
 @SuppressWarnings("unchecked")
 public class InMapperCombinerTest {
-    private Mapper.Context contextMock;
-    private InOrder inOrder;
+    Mapper.Context contextMock;
+    InOrder inOrder;
 
     @Before
     public void setUp() {
