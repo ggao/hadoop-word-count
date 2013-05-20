@@ -3,9 +3,20 @@ import sbt.Keys._
 import scala._
 import com.github.retronym.SbtOneJar
 
+
 object BuildSettings {
 
   import Dependencies._
+
+  val crossHadoopVersions = SettingKey[scala.Seq[scala.Predef.String]](
+    "cross-hadoop-versions",
+    "The versions of Hadoop used for cross building."
+  )
+
+  val hadoopVersion = SettingKey[scala.Predef.String](
+    "hadoop-version",
+    "The version of Hadoop used for building."
+  )
 
   lazy val sharedSettings = Defaults.defaultSettings ++ Seq(
     name := "HadoopWordCount",
@@ -15,12 +26,10 @@ object BuildSettings {
     exportJars := true,
     crossPaths := false,
     javacOptions ++= Seq("-source", "1.6", "-target", "1.6"),
-    resolvers ++= Seq(
-      "Cloudera Repository" at "https://repository.cloudera.com/artifactory/cloudera-repos/",
-      "Christoph's Maven Repo" at "http://maven.henkelmann.eu/"
-    ),
     testOptions += Tests.Argument(TestFrameworks.JUnit, "-q", "-v"),
     testListeners <<= target.map(t => Seq(new eu.henkelmann.sbt.JUnitXmlTestsListener(t.getAbsolutePath))),
+    hadoopVersion := "2.0.0-mr1-cdh4.2.0",
+    crossHadoopVersions := Seq("2.0.0-mr1-cdh4.2.0"),
     libraryDependencies ++= sharedLibraryDependencies
   )
 }
