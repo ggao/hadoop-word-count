@@ -20,7 +20,7 @@ object BuildSettings {
       "Christoph's Maven Repo" at "http://maven.henkelmann.eu/"
     ),
     testOptions += Tests.Argument(TestFrameworks.JUnit, "-q", "-v"),
-    //testListeners <<= target.map(t => Seq(new eu.henkelmann.sbt.JUnitXmlTestsListener(t.getAbsolutePath))),
+    testListeners <<= target.map(t => Seq(new eu.henkelmann.sbt.JUnitXmlTestsListener(t.getAbsolutePath))),
     libraryDependencies ++= sharedLibraryDependencies
   )
 }
