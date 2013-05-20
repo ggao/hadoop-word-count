@@ -18,9 +18,10 @@ import static org.mockito.Mockito.*;
  * See http://docs.mockito.googlecode.com/hg/latest/org/mockito/Mockito.html for Mockito example
  */
 
+@SuppressWarnings("unchecked")
 public class InMapperCombinerTest {
-    Mapper.Context contextMock;
-    InOrder inOrder;
+    private Mapper.Context contextMock;
+    private InOrder inOrder;
 
     @Before
     public void setUp() {
@@ -109,7 +110,6 @@ public class InMapperCombinerTest {
 
     @Test
     public void testInMapperCombinerCountingWithoutCombiningFunction() throws IOException, InterruptedException {
-        reset(contextMock);
         final int cacheCapacity = 5;
 
         InMapperCombiner<Text, LongWritable> combiner = new InMapperCombiner<Text, LongWritable>(cacheCapacity);

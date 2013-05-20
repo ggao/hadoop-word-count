@@ -15,7 +15,7 @@ public class WordCountMR {
 
     public static class WordCountMapper extends Mapper<LongWritable, Text, Text, LongWritable> {
         private final static LongWritable one = new LongWritable(1);
-        private Text word = new Text();
+        private final Text word = new Text();
 
         @Override
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
@@ -30,8 +30,8 @@ public class WordCountMR {
 
     public static class WordCountMapperWithInMapperCombiner extends Mapper<LongWritable, Text, Text, LongWritable> {
         private final static LongWritable one = new LongWritable(1);
-        private Text word = new Text();
-        private InMapperCombiner combiner = new InMapperCombiner<Text, LongWritable>(
+        private final Text word = new Text();
+        private final InMapperCombiner combiner = new InMapperCombiner<Text, LongWritable>(
                 new CombiningFunction<LongWritable>() {
                     @Override
                     public LongWritable combine(LongWritable value1, LongWritable value2) {
@@ -42,6 +42,7 @@ public class WordCountMR {
         );
 
         @Override
+        @SuppressWarnings("unchecked")
         public void map(LongWritable key, Text value, Context context) throws IOException, InterruptedException {
             String line = value.toString();
             StringTokenizer tokenizer = new StringTokenizer(line);

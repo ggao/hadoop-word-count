@@ -70,6 +70,8 @@ object Dependencies {
   lazy val hadoopDependencies = Seq(
     "org.apache.hadoop" % "hadoop-core" % HADOOP_VERSION,
     "org.apache.hadoop" % "hadoop-client" % HADOOP_VERSION,
+   // "org.apache.hadoop" % "hadoop-hdfs" % HADOOP_VERSION,
+    "org.apache.hadoop" % "hadoop-minicluster" % HADOOP_VERSION % "test",
     "org.apache.mrunit" % "mrunit" % "0.9.0-incubating" % "test" classifier "hadoop2" //"hadoop1"
   )
 }
