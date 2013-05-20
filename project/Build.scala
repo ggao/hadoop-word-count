@@ -73,7 +73,6 @@ object Dependencies {
 
   lazy val sharedLibraryDependencies = Seq(
     "com.novocode" % "junit-interface" % "0.10-M4" % "test",
-    "eu.henkelmann" % "junit_xml_listener" % "0.2" % "test",
     "org.mockito" % "mockito-all" % "1.9.5" % "test",
     "log4j" % "log4j" % "1.2.17"
   )
