@@ -1,8 +1,9 @@
 package com.dbtsai.hadoop.util;
 
-import org.apache.hadoop.io.AbstractMapWritable;
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.Writable;
 import org.apache.hadoop.io.WritableComparable;
+import org.apache.hadoop.io.WritableUtils;
 import org.apache.hadoop.mapreduce.Mapper;
 
 import java.io.IOException;
@@ -64,8 +65,16 @@ public class InMapperCombiner<KEY extends WritableComparable, VALUE extends Writ
 
     @SuppressWarnings("unchecked")
     public void write(KEY key, VALUE value, Mapper.Context context) throws InterruptedException, IOException {
-        KEY cleanKey ;
-        VALUE cleanValue ;//=  AbstractMapWritable.copy(value);
+        /**
+         *  In Hadoop, context.write(key, value) should have a new copy of key and value in context.write().
+         *  This is because lots of time, people use
+         *      private final static LongWritable one = new LongWritable(1);
+         *  in the mapper class as global variable, and we don't want to reference to it in the LRU cache
+         *  which may cause unexpected result. As a result, we will clone the key and value objects.
+         * */
+        Configuration conf = context.getConfiguration();
+        key = WritableUtils.clone(key, conf);
+        value = WritableUtils.clone(value, conf);
         this.context = context;
         if (combiningFunction != null) {
             try {

@@ -1,5 +1,6 @@
 package com.dbtsai.hadoop.util;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -8,6 +9,7 @@ import org.junit.Test;
 import org.mockito.InOrder;
 
 import java.io.IOException;
+import java.util.LinkedHashMap;
 
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
@@ -23,6 +25,7 @@ public class InMapperCombinerTest {
     @Before
     public void setUp() {
         contextMock = mock(Mapper.Context.class);
+        when(contextMock.getConfiguration()).thenReturn(new Configuration());
         inOrder = inOrder(contextMock);
     }
 
@@ -53,7 +56,7 @@ public class InMapperCombinerTest {
         combiner.write(new Text("Mango"), new LongWritable(5), contextMock);
 
         // Since the size of InMapperCombiner is 3, all the key-value paris are in the LRU cache.
-        verifyZeroInteractions(contextMock);
+        inOrder.verify(contextMock, never()).write(any(Text.class), any(LongWritable.class));
 
         // We force to flush out to the contextMock, and see if the result is combined.
         combiner.flush(contextMock);
@@ -75,7 +78,7 @@ public class InMapperCombinerTest {
         combiner.write(new Text("Jujube"), new LongWritable(5), contextMock);
 
         // Since we only have three distinguish keys, nothing is in contextMock.
-        verifyZeroInteractions(contextMock);
+        inOrder.verify(contextMock, never()).write(any(Text.class), any(LongWritable.class));
 
         // The oldest key, Avocado is emitted to contextMock.
         combiner.write(new Text("Cherry"), new LongWritable(2), contextMock);
@@ -85,11 +88,10 @@ public class InMapperCombinerTest {
         // However, we can add new record to Guava to fresh it,
         // and then Jujube will be emitted since it's the eldest.
         combiner.write(new Text("Guava"), new LongWritable(1), contextMock);
-        verifyZeroInteractions(contextMock);
+        inOrder.verify(contextMock, never()).write(any(Text.class), any(LongWritable.class));
 
         combiner.write(new Text("Olive"), new LongWritable(6), contextMock);
         inOrder.verify(contextMock, times(1)).write(new Text("Jujube"), new LongWritable(25));
-
 
         combiner.write(new Text("Walnut"), new LongWritable(2), contextMock);
         combiner.write(new Text("Walnut"), new LongWritable(3), contextMock);
@@ -107,6 +109,7 @@ public class InMapperCombinerTest {
 
     @Test
     public void testInMapperCombinerCountingWithoutCombiningFunction() throws IOException, InterruptedException {
+        reset(contextMock);
         final int cacheCapacity = 5;
 
         InMapperCombiner<Text, LongWritable> combiner = new InMapperCombiner<Text, LongWritable>(cacheCapacity);
@@ -200,5 +203,49 @@ public class InMapperCombinerTest {
             e = ex;
         }
         assertTrue(e instanceof InterruptedException);
+    }
+
+    @Test
+    public void testInMapperCombinerNotChangeTheInputKeyValue() throws IOException, InterruptedException {
+        /**
+         *  In Hadoop, context.write(key, value) should have a new copy of key and value in context.write().
+         *  This is because lots of time, people use
+         *      private final static LongWritable one = new LongWritable(1);
+         *  in the mapper class as global variable, and we don't want to reference to it in the LRU cache
+         *  which may cause unexpected result.
+         * */
+        LinkedHashMap<Text, LongWritable> cache = new LinkedHashMap<Text, LongWritable>();
+        cache.put(new Text("Apple"), new LongWritable(3));
+        assertTrue(cache.containsKey(new Text("Apple")));
+        cache.put(new Text("Apple"), new LongWritable(8));
+        assertTrue(cache.get(new Text("Apple")).get() == 8);
+
+        final int cacheCapacity = 2;
+        InMapperCombiner<Text, LongWritable> combiner = new InMapperCombiner<Text, LongWritable>(
+                cacheCapacity,
+                new CombiningFunction<LongWritable>() {
+                    @Override
+                    public LongWritable combine(LongWritable value1, LongWritable value2) {
+                        value1.set(value1.get() + value2.get());
+                        return value1;
+                    }
+                }
+        );
+
+        Text sharedText = new Text();
+        LongWritable sharedLongWritable = new LongWritable();
+
+        sharedText.set("Apple");
+        sharedLongWritable.set(3);
+        combiner.write(sharedText, sharedLongWritable, contextMock);
+
+        sharedText.set("Mango");
+        sharedLongWritable.set(7);
+        combiner.write(sharedText, sharedLongWritable, contextMock);
+
+        combiner.flush(contextMock);
+
+        inOrder.verify(contextMock, times(1)).write(new Text("Apple"), new LongWritable(3));
+        inOrder.verify(contextMock, times(1)).write(new Text("Mango"), new LongWritable(7));
     }
 }
