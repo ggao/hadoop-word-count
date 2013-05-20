@@ -12,4 +12,8 @@ case "0.11.3" => "com.github.siasia" %% "xsbt-web-plugin" % "0.11.3-0.2.11.1"
 case x if (x.startsWith("0.12")) => "com.github.siasia" %% "xsbt-web-plugin" % "0.12.0-0.2.11.1"
 })
 
+resolvers += "Scala Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
+
+addSbtPlugin("eu.henkelmann" % "junit_xml_listener" % "0.4-SNAPSHOT")
+
 addSbtPlugin("com.github.retronym" % "sbt-onejar" % "0.8")
